@@ -10,15 +10,19 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault()
-    const personObject = {
-      name: newName
+
+    if (persons.some(person => person.name === newName)) {
+      alert(`${newName} is already added to phonebook`)
+    } else {
+      const personObject = {
+        name: newName
+      }
+      setPersons(persons.concat(personObject))
     }
 
-    setPersons(persons.concat(personObject))
     setNewName('')
   }
 
-  
   return (
     <div>
       <h2>Phonebook</h2>
@@ -31,7 +35,7 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      {persons.map((person) => <div key={person.name}>{person.name}</div>)}
+      {persons.map(person => <div key={person.name}>{person.name}</div>)}
     </div>
   )
 }
