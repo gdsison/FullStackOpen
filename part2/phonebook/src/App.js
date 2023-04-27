@@ -28,6 +28,7 @@ const App = () => {
       })
   }, [])
 
+
   const handleNameChange = (event) => setNewName(event.target.value)
   const handleNumberChange = (event) => setNewNumber(event.target.value)
 
@@ -45,13 +46,15 @@ const App = () => {
         name: newName,
         number: newNumber
       }
-      setPersons(persons.concat(personObject))
+      axios
+        .post('http://localhost:3001/persons', personObject)
+        .then(response => {
+          setPersons(persons.concat(response.data))
+        })
     }
-    
     setNewName('')
     setNewNumber('')
   }
-
   return (
     <div>
       <h2>Phonebook</h2>
