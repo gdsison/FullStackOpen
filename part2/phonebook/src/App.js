@@ -1,34 +1,9 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
-
-const Filter = ({ filter, handleFilterChange }) => <div>filter shown with <input value={filter} onChange={handleFilterChange}/></div>
-
-const Phonebook = ({ name, number, addPerson, handleNameChange, handleNumberChange }) => (
-  <form onSubmit={addPerson}>
-    <div>name: <input value={name} onChange={handleNameChange}/></div>
-    <div>number: <input value={number} onChange={handleNumberChange}/></div>
-    <div><button type="submit">add</button></div>
-  </form>
-)
-
-const Persons = ({person, deletePerson}) => (
-  person.map(person => 
-    <div key={person.name}>
-      {person.name} {person.number} <button onClick={() => deletePerson(person.id, person.name)}>Delete</button>
-    </div>)
-)
-
-const Notification = ({ message }) => {
-  if (message == null) {
-    return null
-  }
-
-  return (
-    <div className='error'>
-      {message}
-    </div>
-  )
-}
+import Filter from './components/Filter'
+import Phonebook from './components/Phonebook'
+import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -94,6 +69,12 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
+        })
+        .catch(error => {
+          setErorrMessage(`Information of ${name} has already been removed from the server`)
+          setTimeout(() => {
+            setErorrMessage()
+          }, 3000)
         })
     }
   }
