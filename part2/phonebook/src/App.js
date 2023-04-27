@@ -18,11 +18,24 @@ const Persons = ({person, deletePerson}) => (
     </div>)
 )
 
+const Notification = ({ message }) => {
+  if (message == null) {
+    return null
+  }
+
+  return (
+    <div className='error'>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [errorMessage, setErorrMessage] = useState()
   const filteredPerson = newFilter ? persons.filter(person => person.name.toLowerCase().includes(newFilter.toLowerCase())) : persons
 
   useEffect(() => {
@@ -65,6 +78,10 @@ const App = () => {
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          setErorrMessage(`Added ${returnedPerson.name}`)
+          setTimeout(() => {
+            setErorrMessage()
+          }, 2000)
         })
     }
     setNewName('')
@@ -84,6 +101,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage}/>
       <Filter filter={newFilter} 
         handleFilterChange={handleFilterChange}
       />
