@@ -12,7 +12,12 @@ const Phonebook = ({ name, number, addPerson, handleNameChange, handleNumberChan
   </form>
 )
 
-const Persons = ({person}) => person.map(person => <div key={person.name}>{person.name} {person.number}</div>)
+const Persons = ({person, deletePerson}) => (
+  person.map(person => 
+    <div key={person.name}>
+      {person.name} {person.number} <button onClick={() => deletePerson(person.id, person.name)}>Delete</button>
+    </div>)
+)
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -56,6 +61,17 @@ const App = () => {
     setNewName('')
     setNewNumber('')
   }
+
+  const deletePerson = (id , name) => {
+    if(window.confirm(`Delete ${name} ?`)) {
+      personService
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -70,7 +86,7 @@ const App = () => {
         handleNumberChange={handleNumberChange} 
       />
       <h3>Numbers</h3>
-      <Persons person={filteredPerson} />
+      <Persons person={filteredPerson} deletePerson={deletePerson} />
     </div>
   )
 }
