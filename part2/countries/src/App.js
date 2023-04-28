@@ -1,6 +1,32 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 
+const Weather = ({ lat, lng }) => {
+  const [weather, setWeather] = useState()
+  const apikey = process.env.REACT_APP_API_KEY
+  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&units=metric&appid=${apikey}`
+
+  useEffect(() => {
+    axios
+      .get(url)
+      .then(response => {
+        setWeather(response.data)
+    })
+  }, [])
+  
+  if (!weather) {
+    return null
+  }
+
+  return (
+    <>
+      <div>temperature {weather.main.temp}</div>
+      <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt={weather.weather[0].description}/>
+      <div>wind {weather.wind.speed}</div>
+    </>
+  )
+}
+
 const Countries = ({ countries, onClick }) => {
   if (countries.length < 10) {
     if (countries.length === 1) {
@@ -11,9 +37,11 @@ const Countries = ({ countries, onClick }) => {
           <div>area {countries[0].area}</div>
           <h3>languages:</h3>
           <ul>
-            {Object.values(countries[0].languages).map(language => <li>{language}</li>)}
+            {Object.values(countries[0].languages).map(language => <li key={language}>{language}</li>)}
           </ul>
           <img src={countries[0].flags.png} alt={countries[0].flags.alt}/>
+          <h3>Weather in {countries[0].capital[0]}</h3>
+          <Weather lat={countries[0].capitalInfo.latlng[0]} lng={countries[0].capitalInfo.latlng[1]} />
         </>
       )
     }
@@ -29,7 +57,7 @@ const Countries = ({ countries, onClick }) => {
   } 
 
   return (
-    <div>over 10 countries</div>
+    <div>Too many matches, specify another filter</div>
   )
 }
 
