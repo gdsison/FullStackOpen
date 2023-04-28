@@ -5,3 +5,19 @@ Content-Type: application/json
     "name": "Slim Shady",
     "number": "123-321-123"
 }
+
+### No Name
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "number": "123-321-123"
+}
+
+#### No Number
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "Patrick Star"
+}
