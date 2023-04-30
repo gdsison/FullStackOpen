@@ -18,14 +18,14 @@ let persons = [
 ]
 
 app.get('/api/persons', (request, response) => {
-  Person.find({}).then(person => {
-    response.json(person)
+  Person.find({}).then(persons => {
+    response.json(persons)
   })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then(returnedPerson => {
-    response.json(returnedPerson)
+  Person.findById(request.params.id).then(person => {
+    response.json(person)
   })
 })
 
@@ -51,20 +51,20 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  if (persons.some(person => person.name === body.name)) {
+  /* if (persons.some(person => person.name === body.name)) {
     return response.status(400).json({
       error: 'name must be duplicated'
     })
-  }
+  } */
 
-  const person = {
-    id: Math.floor(Math.random() * 10000),
+  const person = new Person({
     name: body.name,
     number: body.number
-  }
+  })
 
-  persons = persons.concat(person)
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 app.get('/info', (request, response) => {
