@@ -14,9 +14,6 @@ app.use(express.json())
 app.use(cors())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-let persons = [
-]
-
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
     response.json(persons)
@@ -91,7 +88,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.get('/info', (request, response) => {
   response.send(`
-    <div>Phonebook has ${persons.length} people info</div>
+    <div>Phonebook has ${Person.length} people info</div>
     <div>${new Date().toString()}</div>
   `)
 })
