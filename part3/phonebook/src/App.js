@@ -47,6 +47,13 @@ const App = () => {
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id !== findPerson.id ? person : returnedPerson))
           })
+          .catch(error => {
+            setErorrMessage(error.response.data.error)
+            setTimeout(() => {
+              setErorrMessage()
+            }, 2000)
+            console.log(error.response.data.error)
+          })
       }
     } else {
       personService
@@ -57,6 +64,13 @@ const App = () => {
           setTimeout(() => {
             setErorrMessage()
           }, 2000)
+        })
+        .catch(error => {
+          setErorrMessage(error.response.data.error)
+          setTimeout(() => {
+            setErorrMessage()
+          }, 2000)
+          console.log(error.response.data.error)
         })
     }
     setNewName('')
