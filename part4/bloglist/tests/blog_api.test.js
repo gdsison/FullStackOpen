@@ -48,7 +48,24 @@ test('a valid blog can be added', async () => {
 
   const titles = blogsAtEnd.map(b => b.title)
   expect(titles).toContain('Facebook')
+})
 
+test('blog without likes is 0', async () => {
+  const newBlog = {
+    title: 'Facebook',
+    author: 'Mark Zuckerberg',
+    url: 'https://facebook.com'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const newBlogAtEnd = await helper.newBlogInDb()
+  console.log(newBlogAtEnd)
+  expect(newBlogAtEnd.likes).toEqual(0)
 })
 
 afterAll(async () => {
