@@ -129,6 +129,51 @@ describe('deletion of a blog', () => {
   })
 })
 
+describe('updating a blog', () => {
+  test('succeeds with status code 200 if id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+
+    const newBlog = {
+      title: 'Facebook',
+      author: 'Mark Zuckerberg',
+      url: 'https://facebook.com',
+      likes: 3
+    }
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(newBlog)
+      .expect(200)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    expect(blogsAtEnd[0].title).toBe(newBlog.title)
+    expect(blogsAtEnd[0].author).not.toBe(blogToUpdate.title)
+  })
+
+  test('fails with status code 400 if id is invalid', async () => {
+    const randomId = 12345
+
+    const newBlog = {
+      title: 'Facebook',
+      author: 'Mark Zuckerberg',
+      url: 'https://facebook.com',
+      likes: 3
+    }
+
+    await api
+      .put(`/api/blogs/${randomId}`)
+      .send(newBlog)
+      .expect(400)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    const titles = blogsAtEnd.map(b => b.title)
+    expect(titles).not.toContain('Facebook')
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
