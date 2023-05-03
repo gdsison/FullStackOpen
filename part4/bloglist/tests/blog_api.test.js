@@ -5,7 +5,7 @@ const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
 
-beforeAll(async () => {
+beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(helper.initialBlogs)
 })
@@ -66,6 +66,39 @@ test('blog without likes is 0', async () => {
   const newBlogAtEnd = await helper.newBlogInDb()
   console.log(newBlogAtEnd)
   expect(newBlogAtEnd.likes).toEqual(0)
+})
+
+test('blog without title is not added', async () => {
+  const newBlog = {
+    author: 'Mark Zuckerberg',
+    url: 'https://facebook.com',
+    likes: 3
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+})
+
+test('blog without url is not added', async () => {
+  const newBlog = {
+    title: 'Facebook',
+    author: 'Mark Zuckerberg',
+    likes: 3
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  console.log(blogsAtEnd)
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
 })
 
 afterAll(async () => {
