@@ -10,7 +10,7 @@ beforeAll(async () => {
   await Blog.insertMany(helper.initialBlogs)
 })
 
-test('blogs are returned as json', async () =>{
+test('blogs are returned as json', async () => {
   await api
     .get('/api/blogs')
     .expect(200)
@@ -21,6 +21,12 @@ test('all blogs are returned', async () => {
   const blogs = await api.get('/api/blogs')
 
   expect(blogs.body).toHaveLength(helper.initialBlogs.length)
+})
+
+test('blogs unique identifier id is defined', async () => {
+  const blogs = await api.get('/api/blogs')
+
+  expect(blogs.body[0].id).toBeDefined()
 })
 
 afterAll(async () => {
