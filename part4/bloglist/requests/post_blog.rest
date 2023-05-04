@@ -2,8 +2,11 @@ POST http://localhost:3003/api/blogs/
 Content-Type: application/json
 
 {
-    "title": "First Blog",
-    "author": "Charlie Lays",
-    "url": "fakeurl.com",
-    "likes": 3
+    "title": "Cheddar Snow",
+    "author": "Alexander Fringe",
+    "url": "https://snoozefest.com",
+    "likes": 6,
+    "userId": "6453919d9ab4b92b4b2eb1bb"
 }
+
+// userid =  6453919d9ab4b92b4b2eb1bb
