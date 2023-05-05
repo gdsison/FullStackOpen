@@ -5,6 +5,7 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [newNotification, setNewNotification] = useState(null)
 
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
@@ -37,8 +38,12 @@ const App = () => {
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
       setUser(user)
       blogService.setToken(user.token)
+
     } catch (exception) {
-      console.log(exception.message)
+      setNewNotification('wrong password or username')
+      setTimeout(() => {
+        setNewNotification(null)
+      }, 5000)
     }
 
     setUsername('')
@@ -57,8 +62,17 @@ const App = () => {
     try {
       const blog = await blogService.create(blogObject)
       setBlogs(blogs.concat(blog))
+
+      setNewNotification(`a new blog ${blog.title} by ${blog.author} added`)
+      setTimeout(() => {
+        setNewNotification(null)
+      }, 5000)
+
     } catch (exception) {
-      console.log(exception.message)
+      setNewNotification(exception.message)
+      setTimeout(() => {
+        setNewNotification(null)
+      }, 5000)
     }
 
     setNewTitle('')
@@ -95,10 +109,13 @@ const App = () => {
     </form>
   )
 
+  const notification = () => <div className='error'>{newNotification}</div>
+
   if (user === null) {
     return (
       <div>
         <h2>Log in to application</h2>
+        {newNotification && notification()}
         {loginForm()}
       </div>
     )
@@ -108,6 +125,8 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       
+      {newNotification && notification()}
+
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
 
       <h2>create new</h2>
