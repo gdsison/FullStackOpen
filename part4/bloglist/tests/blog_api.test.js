@@ -1,15 +1,27 @@
 const supertest = require('supertest')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 
 const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(helper.initialBlogs)
+  await User.deleteMany({})
+
+
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = new User({ username: 'root', name: 'Superuser', passwordHash })
+  await user.save()
+
+  const passwordHash2 = await bcrypt.hash('sekret2', 10)
+  const user2 = new User({ username: 'root2', name: 'Superuser2', passwordHash: passwordHash2 })
+  await user2.save()
 })
 
 describe('when there is initially some blogs saved', () => {
@@ -35,6 +47,16 @@ describe('when there is initially some blogs saved', () => {
 
 describe('addition of new blog', () => {
   test('succeeds with valid data', async () => {
+    const loginCredential = {
+      username: 'root',
+      password: 'sekret'
+    }
+
+    const login = await api
+      .post('/api/login')
+      .send(loginCredential)
+      .expect(200)
+
     const newBlog = {
       title: 'Facebook',
       author: 'Mark Zuckerberg',
@@ -45,6 +67,7 @@ describe('addition of new blog', () => {
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `Bearer ${login.body.token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -56,6 +79,16 @@ describe('addition of new blog', () => {
   })
 
   test('succeeds without likes and likes default into 0', async () => {
+    const loginCredential = {
+      username: 'root',
+      password: 'sekret'
+    }
+
+    const login = await api
+      .post('/api/login')
+      .send(loginCredential)
+      .expect(200)
+
     const newBlog = {
       title: 'Facebook',
       author: 'Mark Zuckerberg',
@@ -65,6 +98,7 @@ describe('addition of new blog', () => {
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `Bearer ${login.body.token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -72,8 +106,94 @@ describe('addition of new blog', () => {
     expect(newBlogAtEnd.likes).toEqual(0)
   })
 
-  test('fails with status code 400 if title is missing ', async () => {
+  test('fails with proper status code (401) and error message if token is missing', async() => {
     const newBlog = {
+      author: 'Mark Zuckerberg',
+      url: 'https://facebook.com',
+      likes: 3
+    }
+
+    const result = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+
+    expect(result.body.error).toContain('jwt must be provided')
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
+
+  test('fails with proper status code (400) and error message if title is missing ', async () => {
+    const loginCredential = {
+      username: 'root',
+      password: 'sekret'
+    }
+
+    const login = await api
+      .post('/api/login')
+      .send(loginCredential)
+      .expect(200)
+
+    const newBlog = {
+      author: 'Mark Zuckerberg',
+      url: 'https://facebook.com',
+      likes: 3
+    }
+
+    const result = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${login.body.token}`)
+      .expect(400)
+
+    expect(result.body.error).toContain('`title` is required.')
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
+
+  test('fails with proper status code (400) and error message if url is missing', async () => {
+    const loginCredential = {
+      username: 'root',
+      password: 'sekret'
+    }
+
+    const login = await api
+      .post('/api/login')
+      .send(loginCredential)
+      .expect(200)
+
+    const newBlog = {
+      title: 'Facebook',
+      author: 'Mark Zuckerberg',
+      likes: 3
+    }
+
+    const result = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${login.body.token}`)
+      .expect(400)
+
+    expect(result.body.error).toContain('`url` is required.')
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
+})
+
+describe('deletion of a blog', () => {
+  test('succeeds with status code 204 if id is valid', async () => {
+    const loginCredential = {
+      username: 'root',
+      password: 'sekret'
+    }
+
+    const login = await api
+      .post('/api/login')
+      .send(loginCredential)
+      .expect(200)
+
+    const newBlog = {
+      title: 'Facebook',
       author: 'Mark Zuckerberg',
       url: 'https://facebook.com',
       likes: 3
@@ -82,51 +202,104 @@ describe('addition of new blog', () => {
     await api
       .post('/api/blogs')
       .send(newBlog)
-      .expect(400)
+      .set('Authorization', `Bearer ${login.body.token}`)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[blogsAtStart.length - 1]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${login.body.token}`)
+      .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
   })
 
-  test('fails with status code 400 if url is missing', async () => {
+  test('fails with proper status code (401) and error message if token is missing', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    const result = await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(401)
+
+    expect(result.body.error).toContain('jwt must be provided')
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
+  })
+
+  test('fails with proper status code (401) and error message if token (user) is unauthorized',async () => {
+    const loginCredential = {
+      username: 'root',
+      password: 'sekret'
+    }
+
+    const login = await api
+      .post('/api/login')
+      .send(loginCredential)
+      .expect(200)
+
     const newBlog = {
       title: 'Facebook',
       author: 'Mark Zuckerberg',
+      url: 'https://facebook.com',
       likes: 3
     }
 
     await api
       .post('/api/blogs')
       .send(newBlog)
-      .expect(400)
+      .set('Authorization', `Bearer ${login.body.token}`)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
-    const blogsAtEnd = await helper.blogsInDb()
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
-  })
-})
+    const newLoginCredential = {
+      username: 'root2',
+      password: 'sekret2'
+    }
 
-describe('deletion of a blog', () => {
-  test('succeeds with status code 204 if id is valid', async () => {
+    const wrongLogin = await api
+      .post('/api/login')
+      .send(newLoginCredential)
+      .expect(200)
+
     const blogsAtStart = await helper.blogsInDb()
-    const blogToDelete = blogsAtStart[0]
+    const blogToDelete = blogsAtStart[blogsAtStart.length - 1]
 
-    await api
+    const result = await api
       .delete(`/api/blogs/${blogToDelete.id}`)
-      .expect(204)
+      .set('Authorization', `Bearer ${wrongLogin.body.token}`)
+      .expect(401)
+
+    expect(result.body.error).toContain('user invalid')
 
     const blogsAtEnd = await helper.blogsInDb()
-
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
   })
 
-  test('fails with status code 400 if id is invalid', async () => {
+  test('fails with proper status code (400) and error message if id is invalid', async () => {
+    const loginCredential = {
+      username: 'root',
+      password: 'sekret'
+    }
+
+    const login = await api
+      .post('/api/login')
+      .send(loginCredential)
+      .expect(200)
+
     const randomId = '21332'
-    await api
+    const result = await api
       .delete(`/api/blogs/${randomId}`)
+      .set('Authorization', `Bearer ${login.body.token}`)
       .expect(400)
 
+    expect(result.body.error).toContain('malformatted id')
     const blogsAtEnd = await helper.blogsInDb()
-
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
   })
 })
