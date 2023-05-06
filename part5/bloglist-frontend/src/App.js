@@ -18,7 +18,7 @@ const App = () => {
   /* useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, []) */
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const App = () => {
   const addBlog = async (blogObject) => {
     try {
       const blog = await blogService.create(blogObject)
-      
+
       blog.user = {
         id: blog.user,
         name: user.name,
@@ -86,16 +86,19 @@ const App = () => {
   const addLike = async (id, blogObject) => {
     try {
       const updatedBlog = await blogService.update(id, blogObject)
-      
+
       updatedBlog.user = {
         id: updatedBlog.user,
         name: blogObject.user.name,
         username: blogObject.user.username
       }
-      
+
       setBlogs(blogs.map(blog => blog.id === id ? updatedBlog : blog))
     } catch (exception) {
-      console.log(exception)
+      setNewNotification(exception.message)
+      setTimeout(() => {
+        setNewNotification(null)
+      }, 5000)
     }
   }
 
@@ -105,7 +108,10 @@ const App = () => {
         await blogService.remove(id)
         setBlogs(blogs.filter(blog => blog.id  !== id))
       } catch (exception) {
-        console.log(exception)
+        setNewNotification(exception.message)
+        setTimeout(() => {
+          setNewNotification(null)
+        }, 5000)
       }
     }
   }
@@ -119,12 +125,12 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <LoginForm 
-          handleLogin={handleLogin} 
+        <LoginForm
+          handleLogin={handleLogin}
           username={username}
-          handleUsername={({target}) => setUsername(target.value)}
+          handleUsername={({ target }) => setUsername(target.value)}
           password={password}
-          handlePassword={({target}) => setPassword(target.value)}
+          handlePassword={({ target }) => setPassword(target.value)}
         >
           <Notification message={newNotification} />
         </LoginForm>
@@ -135,7 +141,6 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      
       <Notification message={newNotification} />
 
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
@@ -145,7 +150,7 @@ const App = () => {
       <Togglable buttonLabel={'new blog'}>
         <BlogForm createBlog={addBlog}/>
       </Togglable>
-      
+
       {blogs.sort((a,b) => b.likes - a.likes).map(blog =>
         <Blog key={blog.id} blog={blog} addLike={addLike} deleteBlog={deleteBlog} />
       )}
