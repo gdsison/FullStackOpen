@@ -53,6 +53,15 @@ const App = () => {
   const addBlog = async (blogObject) => {
     try {
       const blog = await blogService.create(blogObject)
+      
+      const blogUserObject = {
+        id: blog.user,
+        name: user.name,
+        username: user.username
+      }
+
+      blog.user = blogUserObject
+      
       setBlogs(blogs.concat(blog))
 
       setNewNotification(`a new blog ${blog.title} by ${blog.author} added`)

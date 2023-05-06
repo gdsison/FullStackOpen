@@ -15,6 +15,7 @@ const Blog = ({blog}) => {
 
   const handleView = () => {
     setVisible(!visible)
+    console.log(blog)
   }
 
   return (
