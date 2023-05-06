@@ -15,10 +15,18 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  useEffect(() => {
+  /* useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )  
+  }, []) */
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const blogs = await blogService.getAll()
+      setBlogs(blogs)
+    }
+    fetchData()
   }, [])
 
   useEffect(() => {
@@ -54,14 +62,12 @@ const App = () => {
     try {
       const blog = await blogService.create(blogObject)
       
-      const blogUserObject = {
+      blog.user = {
         id: blog.user,
         name: user.name,
         username: user.username
       }
 
-      blog.user = blogUserObject
-      
       setBlogs(blogs.concat(blog))
 
       setNewNotification(`a new blog ${blog.title} by ${blog.author} added`)
@@ -74,6 +80,23 @@ const App = () => {
       setTimeout(() => {
         setNewNotification(null)
       }, 5000)
+    }
+  }
+
+  const addLike = async (id, blogObject) => {
+    try {
+      console.log(blogObject)
+      const updatedBlog = await blogService.update(id, blogObject)
+      
+      updatedBlog.user = {
+        id: updatedBlog.user,
+        name: blogObject.user.name,
+        username: blogObject.user.username
+      }
+      
+      setBlogs(blogs.map(blog => blog.id === id ? updatedBlog : blog))
+    } catch (exception) {
+      console.log(exception)
     }
   }
 
@@ -114,7 +137,7 @@ const App = () => {
       </Togglable>
       
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} addLike={addLike} />
       )}
     </div>
   )
