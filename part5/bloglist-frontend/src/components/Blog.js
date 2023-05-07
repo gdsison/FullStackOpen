@@ -28,9 +28,12 @@ const Blog = ({ blog , addLike, deleteBlog }) => {
   }
 
   return (
-    <div style={blogStyle}>
-      {blog.title} {blog.author} <button onClick={handleView}>view</button>
-      <div style={showWhenVisible}>
+    <div style={blogStyle} className='blog'>
+      <div>
+        {blog.title} {blog.author}
+        <button onClick={handleView}>view</button>
+      </div>
+      <div style={showWhenVisible} className='viewBlog'>
         <div>{blog.url}</div>
         <div>likes: {blog.likes} <button onClick={handleLike}>like</button></div>
         <div>{blog.user.name}</div>
