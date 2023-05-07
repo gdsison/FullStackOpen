@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 const Blog = ({ blog , addLike, deleteBlog }) => {
   const [visible, setVisible] = useState(false)
 
-  const showWhenVisible = { display: visible ? '' : 'none' }
+  /* const showWhenVisible = { display: visible ? '' : 'none' } */
 
   const blogStyle = {
     paddingTop: 10,
@@ -27,18 +27,22 @@ const Blog = ({ blog , addLike, deleteBlog }) => {
     deleteBlog(blog.id, blog.title, blog.author)
   }
 
+  const viewInformation = () => (
+    <div className='viewBlog'>
+      <div>{blog.url}</div>
+      <div>likes: {blog.likes} <button onClick={handleLike}>like</button></div>
+      <div>{blog.user.name}</div>
+      <button onClick={handleDelete}>delete</button>
+    </div>
+  )
+
   return (
     <div style={blogStyle} className='blog'>
       <div>
         {blog.title} {blog.author}
         <button onClick={handleView}>view</button>
       </div>
-      <div style={showWhenVisible} className='viewBlog'>
-        <div>{blog.url}</div>
-        <div>likes: {blog.likes} <button onClick={handleLike}>like</button></div>
-        <div>{blog.user.name}</div>
-        <button onClick={handleDelete}>delete</button>
-      </div>
+      {visible && viewInformation()}
     </div>
   )
 }
