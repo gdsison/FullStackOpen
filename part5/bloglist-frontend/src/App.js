@@ -48,7 +48,7 @@ const App = () => {
       blogService.setToken(user.token)
 
     } catch (exception) {
-      setNewNotification('wrong password or username')
+      setNewNotification('wrong username or password')
       setTimeout(() => {
         setNewNotification(null)
       }, 5000)
