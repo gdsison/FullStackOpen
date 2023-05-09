@@ -5,9 +5,14 @@ describe('Blog app', function() {
       name: 'Lays Stax',
       username: 'ilovechips',
       password: 'potato'
-
     }
     cy.request('POST', `${Cypress.env('BACKEND')}/users`, user)
+    const user2 = {
+      name: 'Aqua Marine',
+      username: 'ilovewater',
+      password: 'watah'
+    }
+    cy.request('POST', `${Cypress.env('BACKEND')}/users`, user2)
     cy.visit('')
   })
 
@@ -69,7 +74,7 @@ describe('Blog app', function() {
       cy.contains('likes: 0').should('not.exist')
     })
 
-    it.only('A blog can be deleted by the creator', function() {
+    it('A blog can be deleted by the creator', function() {
       cy.createBlog({
         title: 'Wonderful Blog',
         author: 'Cool Author',
@@ -80,6 +85,23 @@ describe('Blog app', function() {
       cy.contains('view').click()
       cy.contains('delete').click()
       cy.contains('Wonderful Blog Cool Author').should('not.exist')
+    })
+
+    it.only('Blog delete button can only be seen by creator', function() {
+      cy.createBlog({
+        title: 'Wonderful Blog',
+        author: 'Cool Author',
+        url: 'Long url'
+      })
+
+      cy.contains('Wonderful Blog Cool Author')
+      cy.contains('view').click()
+      cy.contains('delete')
+
+      cy.login({ username: 'ilovewater', password: 'watah' })
+
+      cy.contains('view').click()
+      cy.contains('delete').should('not.exist')
     })
   })
 })
