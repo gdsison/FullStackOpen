@@ -43,7 +43,7 @@ describe('Blog app', function() {
       cy.login({ username: 'ilovechips', password: 'potato' })
     })
 
-    it.only('A blog can be created', function() {
+    it('A blog can be created', function() {
       cy.contains('Lays Stax logged in')
       cy.contains('new blog').click()
       cy.get('#title').type('Wonderful Blog')
@@ -53,6 +53,20 @@ describe('Blog app', function() {
 
       cy.get('.error').should('contain', 'a new blog Wonderful Blog by Cool Author added')
       cy.contains('Wonderful Blog Cool Author')
+    })
+
+    it.only('A blog can be liked', function() {
+      cy.createBlog({
+        title: 'Wonderful Blog',
+        author: 'Cool Author',
+        url: 'Long url'
+      })
+
+      cy.contains('view').click()
+      cy.contains('likes: 0')
+      cy.contains('like').click()
+      cy.contains('likes: 1')
+      cy.contains('likes: 0').should('not.exist')
     })
   })
 })
