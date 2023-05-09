@@ -87,7 +87,7 @@ describe('Blog app', function() {
       cy.contains('Wonderful Blog Cool Author').should('not.exist')
     })
 
-    it.only('Blog delete button can only be seen by creator', function() {
+    it('Blog delete button can only be seen by creator', function() {
       cy.createBlog({
         title: 'Wonderful Blog',
         author: 'Cool Author',
@@ -102,6 +102,24 @@ describe('Blog app', function() {
 
       cy.contains('view').click()
       cy.contains('delete').should('not.exist')
+    })
+
+    it.only('Blogs are ordered according to likes with most likes being first', function() {
+      cy.createBlog({ title: 'least liked blog', author: 'poor author', url: 'cryurl' })
+      cy.createBlog({ title: 'second most liked blog', author: 'meh author', url: 'mehurl'})
+      cy.createBlog({ title: 'most liked blog', author: 'rich author', url: 'happyurl'})
+
+      cy.contains('most liked blog rich author').contains('view').click()
+      cy.contains('most liked blog rich author').get('#like-button').click()
+      cy.contains('most liked blog rich author').get('#like-button').click()
+      cy.contains('most liked blog rich author').contains('view').click()
+      cy.contains('second most liked blog meh author').contains('view').click()
+      cy.contains('second most liked blog meh author').get('#like-button').click()
+
+
+      cy.get('.blog').eq(0).should('contain', 'most liked blog')
+      cy.get('.blog').eq(1).should('contain', 'second most liked blog')
+      cy.get('.blog').eq(2).should('contain', 'least liked blog')
     })
   })
 })

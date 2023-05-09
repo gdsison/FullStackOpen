@@ -30,7 +30,7 @@ const Blog = ({ blog , addLike, deleteBlog, userName }) => {
   const viewInformation = () => (
     <div className='viewBlog'>
       <div>{blog.url}</div>
-      <div>likes: {blog.likes} <button onClick={handleLike}>like</button></div>
+      <div>likes: {blog.likes} <button id='like-button' onClick={handleLike}>like</button></div>
       <div>{blog.user.name}</div>
       {console.log(userName)}
       {(userName === blog.user.username) && <button onClick={handleDelete}>delete</button>}
