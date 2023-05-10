@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { voteAnecdote } from '../reducers/anecdoteReducer'
-import { createNotification, removeNotification } from '../reducers/notificationReducer'
+import { setNotfication } from '../reducers/notificationReducer'
 
 const Anecdote = ({ anecdote, handleClick}) => (
     <div>
@@ -27,10 +27,7 @@ const AnecdoteList = () => {
 
     const vote = async (anecdote) => {
         dispatch(voteAnecdote(anecdote))
-        dispatch(createNotification(`you voted '${anecdote.content}'`))
-        setTimeout(() => {
-            dispatch(removeNotification())
-        }, 5000)
+        dispatch(setNotfication(`you voted '${anecdote.content}'`, 1000))
     }
 
     return (
