@@ -21,11 +21,12 @@ const AnecdoteList = () => {
             return state.anecdotes
         }
     })
+
     const dispatch = useDispatch()
 
     return (
         <div>
-            {anecdotes.sort((a,b) => b.votes - a.votes).map(anecdote =>
+            {anecdotes.slice().sort((a,b) => b.votes - a.votes).map(anecdote =>
                 <Anecdote key={anecdote.id} anecdote={anecdote} handleClick={() => dispatch(voteAnecdote(anecdote.id))} />
             )}
         </div>
