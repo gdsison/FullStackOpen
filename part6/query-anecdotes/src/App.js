@@ -10,7 +10,6 @@ const App = () => {
   }
 
   const result = useQuery('anecdotes', getAnecdotes)
-  console.log(result)
 
   if ( result.isLoading ) {
     return <div>loading data...</div>
