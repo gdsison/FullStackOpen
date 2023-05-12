@@ -14,7 +14,11 @@ const AnecdoteForm = () => {
       dispatch({type: 'CREATE', payload: `anecdote '${newAnecdote.content}' created`})
     },
     onError: (error) => {
+<<<<<<< HEAD
       dispatch({type: 'CREATE', payload: error.response.data.error})
+=======
+      dispatch({type: 'CREATE', payload: 'too short anecdote, must have length 5 or more'})
+>>>>>>> 78f5ee94c5b51e1c85f129ccbc28260a00d47c8e
     }
   })
 
