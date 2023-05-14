@@ -9,6 +9,9 @@ import loginService from './services/login'
 
 import { useDispatch } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs, createBlog } from './reducers/blogReducer'
+
+import { useSelector } from 'react-redux'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -18,6 +21,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+
+  const reduxblogs = useSelector(state => state.blogs)
+  console.log(reduxblogs)
 
   /* useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -31,6 +37,7 @@ const App = () => {
       setBlogs(blogs)
     }
     fetchData()
+    dispatch(initializeBlogs())
   }, [])
 
   useEffect(() => {
@@ -60,17 +67,9 @@ const App = () => {
 
   const addBlog = async (blogObject) => {
     try {
-      const blog = await blogService.create(blogObject)
-
-      blog.user = {
-        id: blog.user,
-        name: user.name,
-        username: user.username,
-      }
-
-      setBlogs(blogs.concat(blog))
-
-      dispatch(setNotification(`a new blog ${blog.title} by ${blog.author} added`))
+      const userObject = { name: user.name, username: user.username }
+      dispatch(createBlog(blogObject, userObject))
+      dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`))
     } catch (exception) {
       dispatch(setNotification(exception.message))
     }
@@ -140,7 +139,8 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
-      {blogs
+      {reduxblogs
+        .slice()
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
           <Blog
