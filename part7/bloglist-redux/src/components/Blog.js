@@ -27,7 +27,7 @@ const Blog = ({ blog, userName }) => {
   }
 
   const handleDelete = () => {
-    const blogDelete = { id : blog.id, title: blog.title, author: blog.author }
+    const blogDelete = { id: blog.id, title: blog.title, author: blog.author }
     dispatch(deleteBlog(blogDelete))
   }
 
@@ -59,7 +59,7 @@ const Blog = ({ blog, userName }) => {
 }
 
 Blog.propTypes = {
-  blog: PropTypes.object.isRequired
+  blog: PropTypes.object.isRequired,
 }
 
 export default Blog

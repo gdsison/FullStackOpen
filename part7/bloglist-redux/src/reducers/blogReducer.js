@@ -13,42 +13,56 @@ const blogSlice = createSlice({
       state.push(action.payload)
     },
     updateBlog(state, action) {
-      return state.map(blog => blog.id !== action.payload.id ? blog : action.payload)
+      return state.map((blog) =>
+        blog.id !== action.payload.id ? blog : action.payload
+      )
     },
     removeBlog(state, action) {
-      return state.filter(blog => blog.id !== action.payload)
-    }
-  }
+      return state.filter((blog) => blog.id !== action.payload)
+    },
+  },
 })
 
-export const { setBlogs, appendBlog, updateBlog, removeBlog } = blogSlice.actions
+export const { setBlogs, appendBlog, updateBlog, removeBlog } =
+  blogSlice.actions
 
 export const initializeBlogs = () => {
-  return async dispatch => {
+  return async (dispatch) => {
     const blogs = await blogService.getAll()
     dispatch(setBlogs(blogs))
   }
 }
 
-export const createBlog = (blogObject, userObject) => {
-  return async dispatch => {
-    const blog = await blogService.create(blogObject)
-    blog.user = {
-      ...userObject,
-      id: blog.user.id
+export const createBlog = (blogObject) => {
+  return async (dispatch, getState) => {
+    try {
+      const user = getState().user
+      const blog = await blogService.create(blogObject)
+      blog.user = {
+        id: blog.user.id,
+        name: user.name,
+        username: user.username,
+      }
+      dispatch(appendBlog(blog))
+      dispatch(
+        setNotification(
+          `a new blog ${blogObject.title} by ${blogObject.author} added`
+        )
+      )
+    } catch (exception) {
+      dispatch(setNotification(exception.message))
     }
-    dispatch(appendBlog(blog))
   }
 }
 
 export const voteBlog = (blogObject) => {
-  return async dispatch => {
+  return async (dispatch) => {
     try {
       const blog = await blogService.update(blogObject.id, blogObject)
       blog.user = {
         id: blog.user,
         name: blogObject.user.name,
-        username: blogObject.user.username
+        username: blogObject.user.username,
       }
       dispatch(updateBlog(blog))
       dispatch(setNotification(`voted for ${blog.title}`))
@@ -59,12 +73,16 @@ export const voteBlog = (blogObject) => {
 }
 
 export const deleteBlog = (blogObject) => {
-  return async dispatch => {
+  return async (dispatch) => {
     if (window.confirm(`delete ${blogObject.title} by ${blogObject.author}`)) {
       try {
         dispatch(removeBlog(blogObject.id))
         await blogService.remove(blogObject.id)
-        dispatch(setNotification(`blog ${blogObject.title} by ${blogObject.author} deleted`))
+        dispatch(
+          setNotification(
+            `blog ${blogObject.title} by ${blogObject.author} deleted`
+          )
+        )
       } catch (exception) {
         dispatch(setNotification(exception.message))
       }
