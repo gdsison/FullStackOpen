@@ -16,27 +16,13 @@ import { useSelector } from 'react-redux'
 const App = () => {
   const dispatch = useDispatch()
 
-  const [blogs, setBlogs] = useState([])
-
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const reduxblogs = useSelector(state => state.blogs)
-  console.log(reduxblogs)
-
-  /* useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
-  }, []) */
+  const blogs = useSelector(state => state.blogs)
 
   useEffect(() => {
-    const fetchData = async () => {
-      const blogs = await blogService.getAll()
-      setBlogs(blogs)
-    }
-    fetchData()
     dispatch(initializeBlogs())
   }, [])
 
@@ -72,34 +58,6 @@ const App = () => {
       dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`))
     } catch (exception) {
       dispatch(setNotification(exception.message))
-    }
-  }
-
-  const addLike = async (id, blogObject) => {
-    try {
-      const updatedBlog = await blogService.update(id, blogObject)
-
-      updatedBlog.user = {
-        id: updatedBlog.user,
-        name: blogObject.user.name,
-        username: blogObject.user.username,
-      }
-
-      setBlogs(blogs.map((blog) => (blog.id === id ? updatedBlog : blog)))
-    } catch (exception) {
-      dispatch(setNotification(exception.message))
-    }
-  }
-
-  const deleteBlog = async (id, title, author) => {
-    if (window.confirm(`delete ${title} by ${author}`)) {
-      try {
-        await blogService.remove(id)
-        setBlogs(blogs.filter((blog) => blog.id !== id))
-        dispatch(setNotification(`blog ${title} by ${author} deleted`))
-      } catch (exception) {
-        dispatch(setNotification(exception.message))
-      }
     }
   }
 
@@ -139,15 +97,13 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
-      {reduxblogs
+      {blogs
         .slice()
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
           <Blog
             key={blog.id}
             blog={blog}
-            addLike={addLike}
-            deleteBlog={deleteBlog}
             userName={user.username}
           />
         ))}
