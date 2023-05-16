@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { voteBlog } from '../reducers/blogReducer'
+import { CommentForm } from './CommentForm'
 
 const Blog = () => {
   const dispatch = useDispatch()
@@ -17,7 +18,6 @@ const Blog = () => {
   if (!blog) {
     return null
   }
-  console.log(blog)
 
   return (
     <div>
@@ -30,8 +30,11 @@ const Blog = () => {
       </div>
       <div>added by {blog.user.name}</div>
       <h3>comments</h3>
+      <CommentForm id={blog.id} />
       <ul>
-        {blog.comments.map((comment, i) => <li key={i}>{comment}</li>)}
+        {blog.comments.map((comment, i) => (
+          <li key={i}>{comment}</li>
+        ))}
       </ul>
     </div>
   )

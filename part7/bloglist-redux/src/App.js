@@ -27,16 +27,19 @@ const App = () => {
       setUsers(users)
     }
     fetchUser()
+    console.log('1')
   }, [])
 
   const user = useSelector((state) => state.user)
 
   useEffect(() => {
     dispatch(initializeBlogs())
+    console.log('2')
   }, [])
 
   useEffect(() => {
     dispatch(checkLogin())
+    console.log('3')
   }, [])
 
   const handleLogout = () => {
