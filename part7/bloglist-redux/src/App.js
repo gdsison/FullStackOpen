@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import Blogs from './components/Blogs'
+import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import Users from './components/Users'
@@ -14,6 +15,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import { useState } from 'react'
 import userService from './services/users'
+
 
 const App = () => {
   const dispatch = useDispatch()
@@ -62,6 +64,7 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/" element={<Blogs />} />
+          <Route path='/blogs/:id' element={<Blog />} />
           <Route path="/users" element={<Users users={users} />} />
           <Route path='/users/:id' element={<User users={users} />} />
         </Routes>
