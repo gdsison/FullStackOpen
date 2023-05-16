@@ -17,6 +17,7 @@ const Blog = () => {
   if (!blog) {
     return null
   }
+  console.log(blog)
 
   return (
     <div>
@@ -28,6 +29,10 @@ const Blog = () => {
         {blog.likes} likes <button onClick={handleLike}>like</button>
       </div>
       <div>added by {blog.user.name}</div>
+      <h3>comments</h3>
+      <ul>
+        {blog.comments.map((comment, i) => <li key={i}>{comment}</li>)}
+      </ul>
     </div>
   )
 }
