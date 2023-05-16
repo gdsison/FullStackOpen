@@ -1,7 +1,39 @@
 import { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useQueryClient, useMutation } from 'react-query'
+import { useNotificationDispatch } from '../NotificationContext'
+import { useUserValue } from '../UserContext'
+import blogService from '../services/blogs'
 
-const BlogForm = ({ createBlog }) => {
+const BlogForm = () => {
+  const queryclient = useQueryClient()
+  const user = useUserValue()
+  const setNotification = useNotificationDispatch()
+
+  const newBlogMutation = useMutation(blogService.create, {
+    onSuccess: (newBlog) => {
+      const blogs = queryclient.getQueryData('blogs')
+      newBlog.user = {
+        id: newBlog.user,
+        name: user.name,
+        username: user.username,
+      }
+      queryclient.setQueryData('blogs', blogs.concat(newBlog))
+      setNotification({
+        type: 'CREATE',
+        payload: `a new blog ${newBlog.title} by ${newBlog.author} added`,
+      })
+      setTimeout(() => {
+        setNotification({ type: 'REMOVE' })
+      }, 5000)
+    },
+    onError: () => {
+      setNotification({ type: 'CREATE', payload: 'error' })
+      setTimeout(() => {
+        setNotification({ type: 'REMOVE' })
+      }, 5000)
+    },
+  })
+
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
@@ -9,7 +41,7 @@ const BlogForm = ({ createBlog }) => {
   const addBlog = async (event) => {
     event.preventDefault()
 
-    await createBlog({
+    newBlogMutation.mutate({
       title: newTitle,
       author: newAuthor,
       url: newUrl,
@@ -56,10 +88,6 @@ const BlogForm = ({ createBlog }) => {
       </div>
     </form>
   )
-}
-
-BlogForm.propType = {
-  createBlog: PropTypes.func.isRequired,
 }
 
 export default BlogForm

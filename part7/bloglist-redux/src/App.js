@@ -1,20 +1,32 @@
 import { useEffect } from 'react'
-import Blog from './components/Blog'
-import Togglable from './components/Togglable'
-import BlogForm from './components/BlogForm'
+import Blogs from './components/Blogs'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
+import Users from './components/Users'
 
 import { useDispatch } from 'react-redux'
 import { initializeBlogs } from './reducers/blogReducer'
 import { checkLogin, logout } from './reducers/userReducer'
-
 import { useSelector } from 'react-redux'
+
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+
+import { useState } from 'react'
+import userService from './services/users'
 
 const App = () => {
   const dispatch = useDispatch()
 
-  const blogs = useSelector((state) => state.blogs)
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const users = await userService.getAll()
+      setUsers(users)
+    }
+    fetchUser()
+  }, [])
+
   const user = useSelector((state) => state.user)
 
   useEffect(() => {
@@ -43,23 +55,15 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification />
+      <p>{user.name} logged in</p>
+      <button onClick={handleLogout}>logout</button>
 
-      <p>
-        {user.name} logged in <button onClick={handleLogout}>logout</button>
-      </p>
-
-      <h2>create new</h2>
-
-      <Togglable buttonLabel={'new blog'}>
-        <BlogForm />
-      </Togglable>
-
-      {blogs
-        .slice()
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog key={blog.id} blog={blog} userName={user.username} />
-        ))}
+      <Router>
+        <Routes>
+          <Route path="/" element={<Blogs />} />
+          <Route path="/users" element={<Users users={users} />} />
+        </Routes>
+      </Router>
     </div>
   )
 }

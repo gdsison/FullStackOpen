@@ -1,10 +1,53 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useQueryClient, useMutation } from 'react-query'
+import blogService from '../services/blogs'
+import { useUserValue } from '../UserContext'
+import { useNotificationDispatch } from '../NotificationContext'
 
-const Blog = ({ blog, addLike, deleteBlog, userName }) => {
+const Blog = ({ blog }) => {
+  const queryClient = useQueryClient()
+  const user = useUserValue()
+  const setNotification = useNotificationDispatch()
+
+  const likeBlogMutation = useMutation(blogService.update, {
+    onSuccess: (votedBlog, blogObject) => {
+      votedBlog.user = {
+        id: votedBlog.user,
+        name: blogObject.user.name,
+        username: blogObject.user.username,
+      }
+      const blogs = queryClient.getQueryData('blogs')
+      queryClient.setQueryData(
+        'blogs',
+        blogs.map((blog) => (blog.id !== votedBlog.id ? blog : votedBlog))
+      )
+    },
+    onError: () => {
+      setNotification({ type: 'CREATE', payload: 'error' })
+      setTimeout(() => {
+        setNotification({ type: 'REMOVE' })
+      }, 5000)
+    },
+  })
+
+  const deleteBlogMutation = useMutation(blogService.remove, {
+    onSuccess: (data, blogId) => {
+      const blogs = queryClient.getQueryData('blogs')
+      queryClient.setQueryData(
+        'blogs',
+        blogs.filter((blog) => blog.id !== blogId)
+      )
+    },
+    onError: () => {
+      setNotification({ type: 'CREATE', payload: 'error' })
+      setTimeout(() => {
+        setNotification({ type: 'REMOVE' })
+      }, 5000)
+    },
+  })
+
   const [visible, setVisible] = useState(false)
-
-  /* const showWhenVisible = { display: visible ? '' : 'none' } */
 
   const blogStyle = {
     paddingTop: 10,
@@ -20,11 +63,13 @@ const Blog = ({ blog, addLike, deleteBlog, userName }) => {
 
   const handleLike = () => {
     const updatedBlog = { ...blog, likes: blog.likes + 1 }
-    addLike(blog.id, updatedBlog)
+    likeBlogMutation.mutate(updatedBlog)
   }
 
   const handleDelete = () => {
-    deleteBlog(blog.id, blog.title, blog.author)
+    if (window.confirm(`delete ${blog.title} by ${blog.author}`)) {
+      deleteBlogMutation.mutate(blog.id)
+    }
   }
 
   const viewInformation = () => (
@@ -37,8 +82,7 @@ const Blog = ({ blog, addLike, deleteBlog, userName }) => {
         </button>
       </div>
       <div>{blog.user.name}</div>
-      {console.log(userName)}
-      {userName === blog.user.username && (
+      {user.username === blog.user.username && (
         <button onClick={handleDelete}>delete</button>
       )}
     </div>
@@ -57,8 +101,6 @@ const Blog = ({ blog, addLike, deleteBlog, userName }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  addLike: PropTypes.func.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
 }
 
 export default Blog
