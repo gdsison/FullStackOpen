@@ -11,11 +11,10 @@ import { initializeBlogs } from './reducers/blogReducer'
 import { checkLogin, logout } from './reducers/userReducer'
 import { useSelector } from 'react-redux'
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 
 import { useState } from 'react'
 import userService from './services/users'
-
 
 const App = () => {
   const dispatch = useDispatch()
@@ -44,6 +43,10 @@ const App = () => {
     dispatch(logout())
   }
 
+  const padding = {
+    padding: 5,
+  }
+
   if (user === null) {
     return (
       <div>
@@ -56,17 +59,27 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
-      <Notification />
-      <p>{user.name} logged in</p>
-      <button onClick={handleLogout}>logout</button>
-
       <Router>
+        <div style={{ background: 'lightgrey' }}>
+          <Link style={padding} to="/">
+            blog
+          </Link>
+          <Link style={padding} to="/users">
+            users
+          </Link>
+          <em>
+            {user.name} logged in <button onClick={handleLogout}>logout</button>
+          </em>
+        </div>
+
+        <h2>blog app</h2>
+        <Notification />
+
         <Routes>
           <Route path="/" element={<Blogs />} />
-          <Route path='/blogs/:id' element={<Blog />} />
+          <Route path="/blogs/:id" element={<Blog />} />
           <Route path="/users" element={<Users users={users} />} />
-          <Route path='/users/:id' element={<User users={users} />} />
+          <Route path="/users/:id" element={<User users={users} />} />
         </Routes>
       </Router>
     </div>

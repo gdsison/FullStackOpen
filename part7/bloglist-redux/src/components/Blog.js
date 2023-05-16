@@ -6,8 +6,8 @@ const Blog = () => {
   const dispatch = useDispatch()
   const id = useParams().id
 
-  const blogs = useSelector(state => state.blogs)
-  const blog = blogs.find(blog => blog.id === id)
+  const blogs = useSelector((state) => state.blogs)
+  const blog = blogs.find((blog) => blog.id === id)
 
   const handleLike = () => {
     const updatedBlog = { ...blog, likes: blog.likes + 1 }
@@ -20,9 +20,13 @@ const Blog = () => {
 
   return (
     <div>
-      <h1>{blog.title} {blog.author}</h1>
+      <h1>
+        {blog.title} {blog.author}
+      </h1>
       <div>{blog.url}</div>
-      <div>{blog.likes} likes <button onClick={handleLike}>like</button></div>
+      <div>
+        {blog.likes} likes <button onClick={handleLike}>like</button>
+      </div>
       <div>added by {blog.user.name}</div>
     </div>
   )
