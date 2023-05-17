@@ -1,24 +1,25 @@
 import Togglable from './Togglable'
 import BlogForm from './BlogForm'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import {
+  List,
+  ListItemButton,
+  ListItemText,
+  Divider,
+  Typography,
+} from '@mui/material'
 
 import { useSelector } from 'react-redux'
 
 const Blog = ({ blog }) => {
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
-
+  const navigate = useNavigate()
   return (
-    <div style={blogStyle}>
-      <Link to={`/blogs/${blog.id}`}>
-        {blog.title} {blog.author}
-      </Link>
-    </div>
+    <>
+      <ListItemButton onClick={() => navigate(`/blogs/${blog.id}`)}>
+        <ListItemText primary={blog.title} secondary={blog.author} />
+      </ListItemButton>
+      <Divider />
+    </>
   )
 }
 
@@ -27,16 +28,20 @@ const Blogs = () => {
 
   return (
     <div>
+      <Typography variant="h3">Blogs</Typography>
+      <Divider />
       <Togglable buttonLabel="create new">
         <BlogForm />
       </Togglable>
 
-      {blogs
-        .slice()
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog key={blog.id} blog={blog} />
-        ))}
+      <List>
+        {blogs
+          .slice()
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
+            <Blog key={blog.id} blog={blog} />
+          ))}
+      </List>
     </div>
   )
 }

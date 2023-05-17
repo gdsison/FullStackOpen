@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material'
 import { useSelector } from 'react-redux'
 
 const Notification = () => {
@@ -6,7 +7,11 @@ const Notification = () => {
   if (notification === null) {
     return null
   }
-  return <div className="error">{notification}</div>
+  return (
+    <div className="error">
+      <Typography>{notification}</Typography>
+    </div>
+  )
 }
 
 export default Notification

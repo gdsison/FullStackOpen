@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createBlog } from '../reducers/blogReducer'
 import { useDispatch } from 'react-redux'
+import { Box, Typography, TextField, Button } from '@mui/material'
 
 const BlogForm = () => {
   const dispatch = useDispatch()
@@ -27,39 +28,42 @@ const BlogForm = () => {
 
   return (
     <form onSubmit={addBlog}>
-      <h2>Create new</h2>
-      <div>
-        title:
-        <input
-          value={newTitle}
-          onChange={({ target }) => setNewTitle(target.value)}
+      <Box
+        sx={{
+          '.MuiTextField-root': { m: 1 },
+        }}
+      >
+        <Typography variant="h5">Create New</Typography>
+        <TextField
+          size="small"
+          label="Title"
           placeholder="write blog title here"
+          value={newTitle}
           id="title"
+          onChange={({ target }) => setNewTitle(target.value)}
         />
-      </div>
-      <div>
-        author:
-        <input
-          value={newAuthor}
-          onChange={({ target }) => setNewAuthor(target.value)}
+        <TextField
+          size="small"
+          label="Author"
           placeholder="write blog author here"
+          value={newAuthor}
           id="author"
+          onChange={({ target }) => setNewAuthor(target.value)}
         />
-      </div>
-      <div>
-        url:
-        <input
-          value={newUrl}
-          onChange={({ target }) => setNewUrl(target.value)}
+        <TextField
+          size="small"
+          label="Url"
           placeholder="write blog url here"
+          value={newUrl}
           id="url"
+          onChange={({ target }) => setNewUrl(target.value)}
         />
-      </div>
-      <div>
-        <button id="create-button" type="submit">
-          create
-        </button>
-      </div>
+        <div>
+          <Button variant="contained" id="create-button" type="submit">
+            Create
+          </Button>
+        </div>
+      </Box>
     </form>
   )
 }

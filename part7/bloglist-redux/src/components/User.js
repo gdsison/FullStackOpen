@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material'
 import { useParams } from 'react-router-dom'
 
 const User = ({ users }) => {
@@ -10,7 +11,7 @@ const User = ({ users }) => {
 
   return (
     <div>
-      <h1>{user.name}</h1>
+      <Typography variant="h3">{user.name}</Typography>
       <ul>
         {user.blogs.map((blog) => (
           <li key={blog.id}>{blog.title}</li>
