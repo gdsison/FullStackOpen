@@ -16,6 +16,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import { useState } from 'react'
 import userService from './services/users'
 
+import { Container } from '@mui/material'
+
 const App = () => {
   const dispatch = useDispatch()
 
@@ -62,29 +64,31 @@ const App = () => {
 
   return (
     <div>
-      <Router>
-        <div style={{ background: 'lightgrey' }}>
-          <Link style={padding} to="/">
+      <Container>
+        <Router>
+          <div style={{ background: 'lightgrey' }}>
+            <Link style={padding} to="/">
             blog
-          </Link>
-          <Link style={padding} to="/users">
+            </Link>
+            <Link style={padding} to="/users">
             users
-          </Link>
-          <em>
-            {user.name} logged in <button onClick={handleLogout}>logout</button>
-          </em>
-        </div>
+            </Link>
+            <em>
+              {user.name} logged in <button onClick={handleLogout}>logout</button>
+            </em>
+          </div>
 
-        <h2>blog app</h2>
-        <Notification />
+          <h2>blog app</h2>
+          <Notification />
 
-        <Routes>
-          <Route path="/" element={<Blogs />} />
-          <Route path="/blogs/:id" element={<Blog />} />
-          <Route path="/users" element={<Users users={users} />} />
-          <Route path="/users/:id" element={<User users={users} />} />
-        </Routes>
-      </Router>
+          <Routes>
+            <Route path="/" element={<Blogs />} />
+            <Route path="/blogs/:id" element={<Blog />} />
+            <Route path="/users" element={<Users users={users} />} />
+            <Route path="/users/:id" element={<User users={users} />} />
+          </Routes>
+        </Router>
+      </Container>
     </div>
   )
 }
