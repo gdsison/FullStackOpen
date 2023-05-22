@@ -1,14 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import { useApolloClient } from '@apollo/client'
+import Recommendation from './components/Recommendation'
 
 const App = () => {
   const [token, setToken] = useState(null)
   const [page, setPage] = useState('authors')
   const client = useApolloClient()
+
+  useEffect(() => {
+    if (!token) {
+      setToken(localStorage.getItem('phonenumbers-user-token'))
+    }
+  }, []) //eslint-disable-line
 
   const logout = () => {
     setToken(null)
@@ -24,6 +31,7 @@ const App = () => {
         {token ? (
           <>
             <button onClick={() => setPage('add')}>add book</button>
+            <button onClick={() => setPage('recommendation')}>recommendation</button>
             <button onClick={logout}>logout</button>
           </>
         )
@@ -40,6 +48,9 @@ const App = () => {
       <NewBook show={page === 'add'} />
       
       <LoginForm show={page === 'login'} setToken={setToken} setPage={setPage} />
+
+      <Recommendation show={page === 'recommendation'} />
+
     </div>
   )
 }
