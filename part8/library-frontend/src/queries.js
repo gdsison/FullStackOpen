@@ -41,5 +41,12 @@ mutation EditAuthor($name: String!, $setBornTo: Int!) {
     bookCount
   }
 }
+`
 
+export const LOGIN = gql`
+mutation Mutation($username: String!, $password: String!) {
+  login(username: $username, password: $password) {
+    value
+  }
+}
 `
