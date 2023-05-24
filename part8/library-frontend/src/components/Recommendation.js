@@ -20,7 +20,6 @@ const Recommendation = (props) => {
   }
 
   
-  
   const books = allBooksQuery.data.allBooks
 
   return (

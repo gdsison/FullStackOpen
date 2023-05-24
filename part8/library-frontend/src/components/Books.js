@@ -4,8 +4,11 @@ import { useState } from 'react'
 
 const Books = (props) => {
   const [genre, setGenre] = useState(null)
+ 
 
-  const result = useQuery(ALL_BOOKS)
+  const result = useQuery(ALL_BOOKS, {
+    variables: { genre }
+  })
 
   if (!props.show) {
     return null
@@ -15,11 +18,9 @@ const Books = (props) => {
     return <div>loading...</div>
   }
 
-  let books = result.data.allBooks
+  const books = result.data.allBooks
 
   const genres = [...new Set(books.map(b => b.genres).flat())]
-
-  books = genre ? books.filter(book => book.genres.includes(genre)) : books
 
   return (
     <div>
