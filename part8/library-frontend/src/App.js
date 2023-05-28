@@ -5,7 +5,7 @@ import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import { useApolloClient, useSubscription } from '@apollo/client'
 import Recommendation from './components/Recommendation'
-import { BOOK_ADDED } from './queries'
+import { ALL_BOOKS, BOOK_ADDED } from './queries'
 
 const App = () => {
   const [token, setToken] = useState(null)
@@ -16,6 +16,12 @@ const App = () => {
     onData: ({ data }) => {
       const addedBook = data.data.bookAdded
       window.alert(`${addedBook.title} by ${addedBook.author.name} added!`)
+
+      client.cache.updateQuery({ query: ALL_BOOKS, variables: { genre: null }}, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(addedBook)
+        }
+      })
     }
   })
 
