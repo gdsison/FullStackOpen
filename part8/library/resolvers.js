@@ -13,13 +13,13 @@ const resolvers = {
       authorCount: async () => Author.collection.countDocuments(), 
       allBooks: async (root, args) => {
           let books = await Book.find({}).populate('author', { name: 1, born: 1 })
-          console.log(books)
           books = args.author ? books.filter(book => book.author.name === args.author) : books
           books = args.genre ? books.filter(book => book.genres.includes(args.genre)) : books
           return books
       },
       allAuthors: async () => {
-        return Author.find({})
+        const authors = await Author.find({}).populate('books')
+        return authors
       },
       me: (root, args, context) => {
         return context.currentUser
@@ -27,7 +27,7 @@ const resolvers = {
     },
     Author: {
       bookCount: async (root) => {
-        return Book.count({ author: root._id })
+        return root.books.length
       }
     },
     Mutation: {
@@ -58,10 +58,10 @@ const resolvers = {
             throw new GraphQLError(error)
           }
         }
-        
         const book = new Book({ ...args, author })
         try {
           await book.save()
+          await Author.findByIdAndUpdate(author._id, { books : author.books.concat(book._id)})
         } catch (error) {
           if (error.name === 'ValidationError') {
             throw new GraphQLError(error.message, {
