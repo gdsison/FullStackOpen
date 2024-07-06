@@ -20,12 +20,17 @@ const Content = ({ parts }) =>
     />      
   </>
 
-const Course = ({ course }) => 
-  <div>
-    <Header course={course.name} />
-    <Content parts={course.parts}/>
-    <Total sum={course.parts[0].exercises + course.parts[1].exercises + course.parts[2].exercises}/>
-  </div>
+const Course = ({ course }) => {
+  const sum = course.parts.reduce((total, part) => total + part.exercises, 0)
+  return (
+    <div>
+      <Header course={course.name} />
+      <Content parts={course.parts}/>
+      <Total sum={sum} />
+    </div>
+  )
+}
+  
 
 
 const App = () => {
