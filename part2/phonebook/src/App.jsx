@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import personService from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
@@ -45,7 +44,7 @@ const App = () => {
         name: newName,
         number: newNumber
       }
-      
+
       personService
         .create(personObject)
         .then(returnedPerson => {
@@ -57,12 +56,22 @@ const App = () => {
     setNewNumber('')
   }
 
+  const handleDeletePerson = (person) => {
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      personService
+        .remove(person.id)
+        .then(deletedPerson => {
+          setPersons(persons.filter(p => p.id !== deletedPerson.id))
+        })
+    } 
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
       <Filter 
         value={filter}
-        OnChange={handleFilter}
+        onChange={handleFilter}
       />
 
       <h3>add a number</h3>
@@ -75,7 +84,10 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons persons={personsWithFilter} />
+      <Persons 
+        persons={personsWithFilter}
+        onDelete={handleDeletePerson}
+      />
     </div>
   )
 }

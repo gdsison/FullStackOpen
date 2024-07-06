@@ -1,9 +1,9 @@
-const Filter = ({value, OnChange}) => 
+const Filter = ({value, onChange}) => 
   <div>
     filter shown with 
     <input 
       value={value}
-      onChange={OnChange}
+      onChange={onChange}
     />
   </div>
 
