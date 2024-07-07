@@ -4,11 +4,33 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 
+const Notification = ({info}) => {
+  console.log(info)
+  if (!info.message) return null
+
+  const style = {
+    color: info.type === 'error' ? 'red' : 'green',
+    background: 'lightgrey',
+    fontSize: '20px',
+    borderStyle: 'solid',
+    borderRadius: '5px',
+    padding: '10px',
+    marginBottom: '10px'
+  }
+
+  return (
+    <div style={style}>
+      {info.message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [info, setInfo] = useState({message: null})
 
   useEffect(() => {
     personService
@@ -50,6 +72,7 @@ const App = () => {
           .update(person.id, personObject)
           .then(returnedPerson => {
             setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+            alert(`Phone number of ${returnedPerson.name} updated (${returnedPerson.number})`)
           })
       }
     } else {
@@ -57,6 +80,7 @@ const App = () => {
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          alert(`Added ${returnedPerson.name}`)
         })
     }
     
@@ -74,9 +98,17 @@ const App = () => {
     } 
   }
 
+  const alert = (message, info = 'info') => {
+    setInfo({message, info})
+    setTimeout(() => {
+      setInfo({message: null})
+    }, 2000)
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification info={info} />
       <Filter 
         value={filter}
         onChange={handleFilter}
