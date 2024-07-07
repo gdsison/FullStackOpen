@@ -5,9 +5,6 @@ import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 
 const Notification = ({info}) => {
-  console.log(info)
-  if (!info.message) return null
-
   const style = {
     color: info.type === 'error' ? 'red' : 'green',
     background: 'lightgrey',
@@ -17,6 +14,8 @@ const Notification = ({info}) => {
     padding: '10px',
     marginBottom: '10px'
   }
+
+  if (!info.message) return null
 
   return (
     <div style={style}>
@@ -94,12 +93,17 @@ const App = () => {
         .remove(person.id)
         .then(deletedPerson => {
           setPersons(persons.filter(p => p.id !== deletedPerson.id))
+          alert(`Deleted ${deletedPerson.name}`)
+        })
+        .catch(error => {
+          setPersons(persons.filter(p => p.id !== person.id))
+          alert(`Information of ${person.name} has already been removed from the server`, 'error')
         })
     } 
   }
 
-  const alert = (message, info = 'info') => {
-    setInfo({message, info})
+  const alert = (message, type = 'info') => {
+    setInfo({message, type})
     setTimeout(() => {
       setInfo({message: null})
     }, 2000)
