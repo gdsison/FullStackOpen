@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const Country = ({countries}) => {
+const Country = ({countries, handleShowCountry}) => {
   if (countries.length === 0) {
     return (
       <div>
@@ -19,7 +19,9 @@ const Country = ({countries}) => {
         <h3>languages</h3>
         <ul>
           {languages.map(language => 
-            <li>{language}</li>
+            <li key={language}>
+              {language}
+            </li>
           )}
         </ul>
         <img 
@@ -32,7 +34,12 @@ const Country = ({countries}) => {
     return (
       <div>
         {countries.map(c => 
-          <p key={c.name.common}>{c.name.common}</p>
+          <p key={c.name.common}>
+            {c.name.common} 
+            <button onClick={() => handleShowCountry(c.name.common)}>
+              show
+            </button>
+          </p>
         )}
       </div>
     )
@@ -41,7 +48,6 @@ const Country = ({countries}) => {
   return (
     <p>Too many matches, specify another matches</p>
   )
-   
 }
 
 const App = () => {
@@ -58,10 +64,17 @@ const App = () => {
       })
   },[])
 
+  const handleShowCountry = (countryName) => {
+    setCountrySearch(countryName)
+  } 
+
   return (
     <div>
       find countries <input value={countrySearch} onChange={(e) => setCountrySearch(e.target.value)}/>
-      <Country countries={countriesFiltered}/>
+      <Country 
+        countries={countriesFiltered}
+        handleShowCountry={handleShowCountry}
+      />
     </div>
   )
 }
