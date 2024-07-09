@@ -10,6 +10,20 @@ POST http://localhost:3001/api/persons
 content-Type: application/json
 
 {
-    "name": "John Doe",
-    "number": "12-12-123456"
+  "name": "John Doe",
+  "number": "12-12-123456"
+}
+###
+POST http://localhost:3001/api/persons
+content-Type: application/json
+
+{
+  "name": "John Doe"
+}
+###
+POST http://localhost:3001/api/persons
+content-Type: application/json
+
+{
+  "number": "12-12-123456"
 }
