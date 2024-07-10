@@ -1,13 +1,15 @@
-@baseUrl = http://localhost:3001
-GET {{baseUrl}}/info
+// @hostname = https://phonebook-jrip.onrender.com
+GET {{hostname}}/info
 ###
-GET {{baseUrl}}/api/persons
+GET {{hostname}}/api/persons
 ###
-GET {{baseUrl}}/api/persons/1
+# @prompt id
+GET {{hostname}}/api/persons/{{id}}
 ###
-DELETE {{baseUrl}}/api/persons/1
+# @prompt id
+DELETE {{hostname}}/api/persons/{{id}}
 ###
-POST {{baseUrl}}/api/persons
+POST {{hostname}}/api/persons
 content-Type: application/json
 
 {
@@ -15,14 +17,14 @@ content-Type: application/json
   "number": "12-12-123456"
 }
 ###
-POST {{baseUrl}}/api/persons
+POST {{hostname}}/api/persons
 content-Type: application/json
 
 {
   "name": "John Doe"
 }
 ###
-POST {{baseUrl}}/api/persons
+POST {{hostname}}/api/persons
 content-Type: application/json
 
 {
