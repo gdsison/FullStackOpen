@@ -1,12 +1,13 @@
-GET http://localhost:3001/info
+@baseUrl = http://localhost:3001
+GET {{baseUrl}}/info
 ###
-GET http://localhost:3001/api/persons
+GET {{baseUrl}}/api/persons
 ###
-GET http://localhost:3001/api/persons/1
+GET {{baseUrl}}/api/persons/1
 ###
-DELETE http://localhost:3001/api/persons/1
+DELETE {{baseUrl}}/api/persons/1
 ###
-POST http://localhost:3001/api/persons
+POST {{baseUrl}}/api/persons
 content-Type: application/json
 
 {
@@ -14,14 +15,14 @@ content-Type: application/json
   "number": "12-12-123456"
 }
 ###
-POST http://localhost:3001/api/persons
+POST {{baseUrl}}/api/persons
 content-Type: application/json
 
 {
   "name": "John Doe"
 }
 ###
-POST http://localhost:3001/api/persons
+POST {{baseUrl}}/api/persons
 content-Type: application/json
 
 {
